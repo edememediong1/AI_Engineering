@@ -3,8 +3,8 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   server: {
     proxy: {
-      '/v1beta': {
-        target: 'https://generativelanguage.googleapis.com',
+      '/v1': {
+        target: 'https://openrouter.ai/api',
         changeOrigin: true,
       },
     },
