@@ -16,15 +16,38 @@ const userMessage = {
     content: userPrompt
 }
 
+const messages = [
+    userMessage
+]
+
 document.getElementById("generate-btn").addEventListener("click", async () => {
     console.log("Fetching ideas...");
     try {
-        const response = await openai.chat.completions.create({
+        const firstResponse = await openai.chat.completions.create({
             model: import.meta.env.VITE_AI_MODEL,
-            messages: [ userMessage ]
+            messages
         });
-        console.log(response);
-        alert("Done! Check your console output.");
+        // console.log(response);
+        console.log(firstResponse.choices[0].message.content);
+        // alert("Done! Check your console output.");
+
+
+        const firstAssistantMessage = firstResponse.choices[0].message
+        messages.push(firstAssistantMessage)
+
+        messages.push({
+            role: "user",
+            content: "More budget friendly. Less than $40"
+        })
+
+        // Send second chat completions request
+        const secondResponse = await openai.chat.completions.create({
+            model: process.env.AI_MODEL,
+            messages
+        })
+
+        console.log("Budget friendly suggestions")
+
     } catch (error) {
         console.error("Error fetching ideas:", error);
     }
