@@ -9,6 +9,14 @@ const openai = new OpenAI({
 
 checkEnvironment();
 
+const systemPrompt = {
+    role: "system",
+    content: `Make these suggestions thoughtful and practical.
+    Your response must be under 100 words.
+    Skip intros and  conclusions.
+    Only output gift suggestions`
+}
+
 const userPrompt = "Suggest some gifts for someone who loves hiphop music"
 
 const userMessage = {
@@ -42,11 +50,12 @@ document.getElementById("generate-btn").addEventListener("click", async () => {
 
         // Send second chat completions request
         const secondResponse = await openai.chat.completions.create({
-            model: process.env.AI_MODEL,
+            model: import.meta.env.AI_MODEL,
             messages
         })
 
         console.log("Budget friendly suggestions")
+        console.log(secondResponse.choices[0].message.content)
 
     } catch (error) {
         console.error("Error fetching ideas:", error);
