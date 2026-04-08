@@ -48,7 +48,8 @@ async function handleGiftRequest(e) {
     content: userPrompt
   })
 
-  const response = await openai.chat.completions.create({
+  try{
+    const response = await openai.chat.completions.create({
     model: import.meta.env.AI_MODEL,
     messages
   })
@@ -58,8 +59,13 @@ async function handleGiftRequest(e) {
 
   outputContent.textContent = giftSuggestions
 
-  // Clear loading state
-  setLoading(false);
+  } catch (error) {
+    console.error(error)
+    outputContent.textContent = "Sorry, an error occured! Try again later"
+  } finally{
+    // Clear loading state
+    setLoading(false);
+  }
 }
 
 start();
