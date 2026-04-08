@@ -40,18 +40,18 @@ export function setLoading(isLoading) {
 }
 
 export function checkEnvironment() {
-  if (!process.env.AI_URL) {
-    throw new Error("Missing AI_URL. This tells us which AI provider you're using.");
+  if (!import.meta.env.VITE_API_URL) {
+    throw new Error("Missing API_URL. This tells us which AI provider you're using.");
   }
 
-  if (!process.env.AI_MODEL) {
+  if (!import.meta.env.VITE_AI_MODEL) {
     throw new Error("Missing AI_MODEL. The AI request needs a model name.");
   }
 
-  if (!process.env.AI_KEY) {
-    throw new Error("Missing AI_KEY. Your API key is not being picked up.");
+  if (!import.meta.env.VITE_API_KEY) {
+    throw new Error("Missing API_KEY. Your API key is not being picked up.");
   }
 
-  console.log("AI provider URL:", process.env.AI_URL);
-  console.log("AI model:", process.env.AI_MODEL);
+  console.log("AI provider URL:", import.meta.env.VITE_API_URL);
+  console.log("AI model:", import.meta.env.VITE_AI_MODEL);
 }

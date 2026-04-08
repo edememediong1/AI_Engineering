@@ -4,8 +4,8 @@ checkEnvironment();
 
 // Initialize an OpenAI client for your provider using env vars
 const openai = new OpenAI({
-  apiKey: process.env.AI_KEY,
-  baseURL: process.env.AI_URL,
+  apiKey: import.meta.env.VITE_API_KEY,
+  baseURL: import.meta.env.VITE_API_URL,
   dangerouslyAllowBrowser: true,
 });
 
@@ -42,6 +42,21 @@ async function handleGiftRequest(e) {
 
   // Set loading state
   setLoading(true);
+
+  messages.push({
+    role: "user",
+    content: userPrompt
+  })
+
+  const response = await openai.chat.completions.create({
+    model: import.meta.env.AI_MODEL,
+    messages
+  })
+
+  console.log(response)
+  const giftSuggestions = response.choices[0].message.content
+
+  outputContent.textContent = giftSuggestions
 
   // Clear loading state
   setLoading(false);
