@@ -39,6 +39,13 @@ export function setLoading(isLoading) {
   }
 }
 
+
+export function showStream(){
+  const outputContainer = document.getElementById("output-container");
+  outputContainer.classList.remove("hidden");
+  outputContainer.classList.add("visible");
+}
+
 export function checkEnvironment() {
   if (!import.meta.env.VITE_API_URL) {
     throw new Error("Missing API_URL. This tells us which AI provider you're using.");

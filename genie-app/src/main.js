@@ -1,5 +1,7 @@
 import OpenAI from "openai";
-import { autoResizeTextarea, checkEnvironment, setLoading } from "../utils";
+import { marked } from "marked";
+import { autoResizeTextarea, checkEnvironment, setLoading, showStream } from "../utils";
+import DOMPurify from "dompurify";
 checkEnvironment();
 
 // Initialize an OpenAI client for your provider using env vars
@@ -26,9 +28,18 @@ const messages = [
     role: "system",
     content: `You are the Gift Genie!
     Make your gift suggestions thoughtful and practical.
-    Your response must be under 100 words. 
+    The user will describe the gift's recipient. 
+    Your response must be in structured Markdown.
+        Each gift must: 
+      - Have a clear heading
+      - A short explanation of why it would work
+
     Skip intros and conclusions. 
-    Only output gift suggestions.`,
+    Only output gift suggestions
+    
+    End with a section with an H2 heading titled "Questions for you" 
+    that contains follow-ups that would help improve the 
+    gift suggestions`,
   },
 ];
 
@@ -49,15 +60,30 @@ async function handleGiftRequest(e) {
   })
 
   try{
-    const response = await openai.chat.completions.create({
+    // Send a chat completions request and await its response
+    const stream = await openai.chat.completions.create({
     model: import.meta.env.AI_MODEL,
-    messages
+    messages,
+    stream: true
   })
 
-  console.log(response)
-  const giftSuggestions = response.choices[0].message.content
+  let giftSuggestions = ""
 
-  outputContent.textContent = giftSuggestions
+  // Show output container immediately for streaming feedback
+  showStream();
+
+  for await (const chunk of stream) {
+    const chunkContent = chunk.choices[0].delta.content
+    giftSuggestions += chunkContent
+  }
+
+
+  console.log(giftSuggestions)
+
+  const dirtyGiftSuggestions = marked.parse(giftSuggestions)
+  const cleanedGiftSuggestions = DOMPurify.sanitize(dirtyGiftSuggestions)
+
+  outputContent.innerHTML = cleanedGiftSuggestions
 
   } catch (error) {
     console.error(error)
